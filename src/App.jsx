@@ -70,6 +70,9 @@ function App() {
     <>
       <FileUploader onCompare={handleCompare} />
       {summary && <Summary data={summary} />}
+      <footer className="text-center text-xl bg-[#09090B] text-[#A1A1AA]">
+        Bree-Tech Mini Reconciliation Tool @ 2025
+      </footer>
     </>
   );
 }

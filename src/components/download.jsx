@@ -5,12 +5,6 @@ function Download({ title, items, onExport }) {
       <pre className="bg-white p-3 rounded shadow overflow-auto max-h-60 whitespace-pre-wrap">
         {items.join("\n")}
       </pre>
-      <button
-        onClick={onExport}
-        className="mt-2 bg-green-600 text-white px-3 py-1 rounded"
-      >
-        Export as CSV
-      </button>
     </div>
   );
 }
