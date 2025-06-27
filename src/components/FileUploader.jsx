@@ -54,8 +54,17 @@ function FileUploader({ onCompare }) {
         </label>
       ) : (
         <div className="flex items-center gap-2 bg-[#18181B] text-green-400 px-4 py-2 rounded w-fit">
-          <CheckCircle className="w-4 h-4 text-green-400" />
-          <span>File Loaded</span>
+          <label className="flex items-center gap-2 bg-[#18181B] hover:bg-[#27272A] text-white px-4 py-2 rounded cursor-pointer w-fit">
+            <CheckCircle className="w-4 h-4 text-green-400" />
+            <span>File Loaded</span>
+            <input
+              type="file"
+              ref={inputRef}
+              accept=".csv"
+              className="hidden"
+              onChange={onChange}
+            />
+          </label>
         </div>
       )}
 
