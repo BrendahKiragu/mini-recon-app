@@ -7,8 +7,10 @@ function FileUploader({ onCompare }) {
 
   const [internalFileInfo, setInternalFileInfo] = useState(null);
   const [providerFileInfo, setProviderFileInfo] = useState(null);
+  const [internalFile, setInternalFile] = useState(null);
+  const [providerFile, setProviderFile] = useState(null);
 
-  const handleFileUpload = (e, setFileInfo) => {
+  const handleFileUpload = (e, setFile, setFileInfo) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -21,13 +23,16 @@ function FileUploader({ onCompare }) {
         name: file.name,
         transactions: Math.max(0, numTransactions),
       });
+      setFile(file); // ✅ Save the actual file object for comparison
     };
     reader.readAsText(file);
   };
 
   const handleCompareClick = () => {
-    const internalFile = internalRef.current.files[0];
-    const providerFile = providerRef.current.files[0];
+    if (!internalFile || !providerFile) {
+      alert("Please upload both CSV files before comparing.");
+      return;
+    }
     onCompare(internalFile, providerFile);
   };
 
@@ -90,7 +95,9 @@ function FileUploader({ onCompare }) {
           <h3 className="mb-2">Choose Internal CSV File</h3>
           <FileUploadButton
             fileInfo={internalFileInfo}
-            onChange={(e) => handleFileUpload(e, setInternalFileInfo)}
+            onChange={(e) =>
+              handleFileUpload(e, setInternalFile, setInternalFileInfo)
+            }
             inputRef={internalRef}
           />
         </div>
@@ -104,7 +111,9 @@ function FileUploader({ onCompare }) {
           <h3 className="mb-2">Choose Provider CSV File</h3>
           <FileUploadButton
             fileInfo={providerFileInfo}
-            onChange={(e) => handleFileUpload(e, setProviderFileInfo)}
+            onChange={(e) =>
+              handleFileUpload(e, setProviderFile, setProviderFileInfo)
+            }
             inputRef={providerRef}
           />
         </div>
