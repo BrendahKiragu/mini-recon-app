@@ -1,5 +1,15 @@
+import { useState } from "react";
+
 function Summary({ data }) {
   const { matched, internalOnly, providerOnly } = data;
+  const [expandedSections, setExpandedSections] = useState({});
+
+  const toggleSection = (key) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
 
   const total = matched.length + internalOnly.length + providerOnly.length;
   const matchRate =
@@ -28,7 +38,7 @@ function Summary({ data }) {
     URL.revokeObjectURL(url);
   };
 
-  const renderTable = (title, items, color, filename, sourceLabel) => {
+  const renderTable = (title, items, color, filename) => {
     if (!items.length) return null;
 
     const excludeKeys = ["source"];
@@ -39,7 +49,7 @@ function Summary({ data }) {
     const headers = Object.keys(items[0]).filter(
       (k) => !excludeKeys.includes(k)
     );
-    const preview = items.slice(0, 10);
+    const preview = expandedSections[title] ? items : items.slice(0, 10);
 
     return (
       <div className=" bg-[#09090B] rounded-lg p-4 border border-gray-700">
@@ -48,13 +58,15 @@ function Summary({ data }) {
             <h3 className={`font-semibold ${color}`}>
               {title} ({items.length})
             </h3>
-            <p className="text-sm text-gray-400">Transactions {sourceLabel}</p>
+            <p className="text-sm text-gray-400">
+              Transactions in the {filename} file
+            </p>
           </div>
           <button
             onClick={() => exportCSV(items, filename)}
-            className="flex items-center gap-2 bg-white text-black text-xs px-3 py-1 rounded hover:bg-gray-200"
+            className="flex items-center gap-2 bg-white text-black text-xs px-3 py-1 rounded hover:bg-[#4ADE80]"
           >
-            <span className="material-icons">download</span> Export CSV
+            Export as CSV
           </button>
         </div>
 
@@ -86,8 +98,13 @@ function Summary({ data }) {
             </tbody>
           </table>
           {items.length > 10 && (
-            <div className="text-xs text-gray-400 px-4 py-2">
-              Showing first 10 of {items.length} transactions
+            <div className="text-center mt-2">
+              <button
+                onClick={() => toggleSection(title)}
+                className="text-xs text-blue-400 hover:underline"
+              >
+                {expandedSections[title] ? "Show less" : "Show all"}
+              </button>
             </div>
           )}
         </div>
@@ -96,23 +113,23 @@ function Summary({ data }) {
   };
 
   return (
-    <div className="bg-[#09090B] text-white p-6 rounded-xl mt-8 space-y-6">
+    <div className="bg-[#09090B] text-white p-6 space-y-6">
       {/* Summary Header Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-        <div className="bg-green-900/20 p-4 rounded">
-          <h2 className="text-3xl font-bold text-green-400">
+        <div className="bg-[#052E16] p-4 rounded">
+          <h2 className="text-3xl font-bold text-[#22C55E]">
             {matched.length}
           </h2>
           <p>Matched</p>
         </div>
-        <div className="bg-yellow-900/20 p-4 rounded">
-          <h2 className="text-3xl font-bold text-yellow-400">
+        <div className="bg-[#422006] p-4 rounded">
+          <h2 className="text-3xl font-bold text-[#EAB308]">
             {internalOnly.length}
           </h2>
           <p>Internal Only</p>
         </div>
-        <div className="bg-red-900/20 p-4 rounded">
-          <h2 className="text-3xl font-bold text-red-400">
+        <div className="bg-[#431407] p-4 rounded">
+          <h2 className="text-3xl font-bold text-[#EF4444]">
             {providerOnly.length}
           </h2>
           <p>Provider Only</p>
@@ -151,8 +168,7 @@ function Summary({ data }) {
         "✅ Matched Transactions",
         matched,
         "text-green-400",
-        "matched.csv",
-        true
+        "matched.csv"
       )}
 
       {/* Internal Only */}
