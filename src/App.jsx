@@ -17,6 +17,8 @@ function parseCSV(text) {
 
 function App() {
   const [summary, setSummary] = useState(null);
+  const [hasCompared, setHasCompared] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const handleCompare = async (internalFile, providerFile) => {
     const readFile = (file) =>
@@ -64,16 +66,71 @@ function App() {
     }
 
     setSummary({ matched, internalOnly, providerOnly });
+    setHasCompared(true);
   };
 
+  const VideoModal = () =>
+    showModal && (
+      <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+        <div className="bg-[#18181B] p-4 rounded-lg max-w-3xl w-full relative">
+          <button
+            className="absolute top-2 right-2 text-white text-xl"
+            onClick={() => setShowModal(false)}
+          >
+            ✕
+          </button>
+          <video
+            className="w-full rounded shadow-md"
+            controls
+            poster="/App thumbnail.png"
+          >
+            <source src="/App tour.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+    );
+
   return (
-    <>
-      <FileUploader onCompare={handleCompare} />
-      {summary && <Summary data={summary} />}
-      <footer className="text-center text-xl bg-[#09090B] text-[#A1A1AA]">
+    <div className="bg-[#09090B] min-h-screen text-white px-4 py-4 relative">
+      <div className="space-y-4">
+        <FileUploader onCompare={handleCompare} />
+
+        {!hasCompared && (
+          <div className="text-center">
+            <button
+              className="bg-white text-black px-4 py-2 rounded hover:bg-gray-200 transition"
+              onClick={() => setShowModal(true)}
+            >
+              🎥 Watch App Tour
+            </button>
+          </div>
+        )}
+      </div>
+
+      {summary && (
+        <>
+          <div className="mt-6">
+            <Summary data={summary} />
+          </div>
+
+          <div className="text-center mt-6">
+            <button
+              className="bg-white text-black px-4 py-2 rounded hover:bg-gray-200 transition"
+              onClick={() => setShowModal(true)}
+            >
+              🎥 Watch App Tour Again
+            </button>
+          </div>
+        </>
+      )}
+
+      <VideoModal />
+
+      <footer className="text-center text-sm text-[#A1A1AA] mt-8">
         Bree-Tech Mini Reconciliation Tool @ 2025
       </footer>
-    </>
+    </div>
   );
 }
 
